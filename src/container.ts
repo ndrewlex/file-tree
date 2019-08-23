@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createContainer } from "unstated-next";
 
 interface IChild {
@@ -58,19 +58,34 @@ const useData = () => {
     }
   ]);
 
-  const updateTree = (tree, checked, id) => {
+  const updateChild = (tree, checked) => {
+    return tree.map((element: IChild) => {
+      let newElement = { ...element };
+      newElement.checked = checked;
+      newElement.child = updateChild(newElement.child, checked);
+      return newElement;
+    });
+  };
+
+  const updateTree = (tree, checked, id, parentId) => {
     return tree.map((element: IChild) => {
       let newElement = { ...element };
       if (element.id === id) {
         newElement.checked = checked;
+        newElement.child = updateChild(newElement.child, checked);
       }
-      newElement.child = updateTree(newElement.child, checked, id);
+      newElement.child = updateTree(
+        newElement.child,
+        checked,
+        id,
+        newElement.id
+      );
       return newElement;
     });
   };
 
   const onChecked = (e, id) => {
-    let mappedTree = updateTree(tree, e.target.checked, id);
+    let mappedTree = updateTree(tree, e.target.checked, id, "");
     setTree(mappedTree);
   };
 
