@@ -58,24 +58,19 @@ const useData = () => {
     }
   ]);
 
-  const updateTree = (tree, checked) => {
+  const updateTree = (tree, checked, id) => {
     return tree.map((element: IChild) => {
       let newElement = { ...element };
-      newElement.checked = checked;
-      newElement.child = updateTree(newElement.child, checked);
+      if (element.id === id) {
+        newElement.checked = checked;
+      }
+      newElement.child = updateTree(newElement.child, checked, id);
       return newElement;
     });
   };
 
   const onChecked = (e, id) => {
-    let mappedTree = [...tree].map((element: IChild) => {
-      let newElement = { ...element };
-      if (element.id === id) {
-        newElement.checked = e.target.checked;
-        newElement.child = updateTree(newElement.child, e.target.checked);
-      }
-      return newElement;
-    });
+    let mappedTree = updateTree(tree, e.target.checked, id);
     setTree(mappedTree);
   };
 
